@@ -17,7 +17,7 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME} STATIC
-    src/CyanShaderLib.cpp
+    "src/ShaderObject.cpp"
 )
 
 set_target_properties(
@@ -25,7 +25,7 @@ set_target_properties(
 
     VERSION ${PROJECT_VERSION}
     SOVERSION 1
-    PUBLIC_HEADER include/CyanShaderLib.hpp
+    PUBLIC_HEADER include/ShaderObject.hpp
 )
 
 target_include_directories(
