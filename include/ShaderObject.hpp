@@ -7,7 +7,6 @@
 
 namespace cyan {
 	namespace ShaderLib {
-
 		class ShaderSource {
 		public:
 			ShaderSource();
@@ -16,6 +15,7 @@ namespace cyan {
 			/// </summary>
 			/// <param name="src"></param>
 			ShaderSource(std::string src);
+			ShaderSource(std::list<std::string> dependenciesList, std::string src);
 			/// <summary>
 			/// For simple GLSL programs
 			/// </summary>
@@ -78,6 +78,9 @@ namespace cyan {
 			unsigned int Build(std::list<std::string>& log);
 
 			unsigned int GetShaderProgram();
+
+			void SetActive();
+			void SetActive(bool status);
 		};
 
 		void LoadShaderLibrary(std::map<std::string, ShaderSource> shaderMap);

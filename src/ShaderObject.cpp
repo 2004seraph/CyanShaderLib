@@ -27,6 +27,10 @@ namespace cyan {
 			source = src;
 			preprocessorDirectives = "";
 		};
+		ShaderSource::ShaderSource(std::list<std::string> dependenciesList, std::string src) {
+			source = src;
+			dependencies = dependenciesList;
+		};
 		ShaderSource::ShaderSource(std::string preprocessor, std::string src) {
 			source = src;
 			preprocessorDirectives = preprocessor;
@@ -219,6 +223,18 @@ namespace cyan {
 
 		unsigned int ShaderProgram::GetShaderProgram() {
 			return ShaderID;
+		}
+
+		void ShaderProgram::SetActive(bool status) {
+			if (status) {
+				glUseProgram(ShaderID);
+			}
+			else {
+				glUseProgram(0);
+			}
+		}
+		void ShaderProgram::SetActive() {
+			SetActive(true);
 		}
 	}
 }

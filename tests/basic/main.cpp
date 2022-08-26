@@ -26,16 +26,9 @@ namespace csl = cyan::ShaderLib;
 
 int width = 1000;
 int height = 600;
-
-float vertices[] = {
-	-0.5f, -0.5f, 0.0f,
-	 0.5f, -0.5f, 0.0f,
-	 0.0f,  0.5f, 0.0f
-};
 	
 int main(int argc, char* argv[]) {
 	std::cout << "hello world" << std::endl;
-
 
 	if (!glfwInit())
 	{
@@ -81,7 +74,6 @@ out vec3 vPos;
 #endif
 )")}
 	};
-
 	cyan::ShaderLib::LoadShaderLibrary({ myShaderLib });
 
 
@@ -148,6 +140,7 @@ void main()
 
 	glBindVertexArray(0);
 
+	myCubeShader.SetActive();
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -156,7 +149,6 @@ void main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
@@ -164,8 +156,6 @@ void main()
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-
-	//shaderLibrary slib = CSL.load(
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
