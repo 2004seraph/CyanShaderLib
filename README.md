@@ -1,6 +1,6 @@
 # CyanShaderLib - My GLSL Shader Lib
 
-C++17
+Some basic classes made for my personal use to create OpenGL shaders easily in C++17. Use at your own risk.
 
 ## Building
 
