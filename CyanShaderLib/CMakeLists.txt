@@ -3,7 +3,9 @@
 #
 cmake_minimum_required(VERSION 3.8)
 
-set(CMAKE_CXX_STANDARD 17)
+set(
+    CMAKE_CXX_STANDARD 17
+)
 
 project(
     "CyanShaderLib" 
@@ -11,14 +13,22 @@ project(
     DESCRIPTION "A simple C++17 GLSL shader library"
 )
 
+find_package(glew CONFIG REQUIRED)
+
 include_directories(
   ${PROJECT_NAME}
+  ${GLEW_INCLUDE_DIRS}
   "include/"
 )
 
 add_library(${PROJECT_NAME} STATIC
     "src/ShaderObject.cpp"
 )
+
+ target_link_libraries(
+     ${PROJECT_NAME} 
+     GLEW::GLEW
+ )
 
 set_target_properties(
     ${PROJECT_NAME} PROPERTIES 
