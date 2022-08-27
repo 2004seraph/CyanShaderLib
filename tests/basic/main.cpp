@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
 
 	glViewport(0, 0, width, height);
 
-	
+//init library of interfaces
 	std::map<std::string, cyan::ShaderLib::ShaderSource> myShaderLib = {
 	{"net.cyanseraph.glsl.vertex.interface", cyan::ShaderLib::ShaderSource(
 	R"(
@@ -82,7 +82,15 @@ int main(int argc, char* argv[]) {
 	layout (location = 0) in vec3 aPos;
 	out vec3 vPos;
 
-	int fungus = 5;
+	#endif
+	)")
+	},{"net.cyanseraph.glsl.fragment.interface", cyan::ShaderLib::ShaderSource(
+	R"(
+	#ifndef net_cyanseraph_glsl_fragment_interface
+	#define net_cyanseraph_glsl_fragment_interface
+
+	out vec4 FragColor;
+	in vec3 vPos;
 
 	#endif
 	)")
@@ -90,30 +98,25 @@ int main(int argc, char* argv[]) {
 	};
 	cyan::ShaderLib::LoadShaderLibrary({ myShaderLib });
 
-	
+//create shader
 	csl::ShaderProgram myCubeShader(new csl::ShaderSource("#version 330 core", std::list<std::string>{"net.cyanseraph.glsl.vertex.interface"},
-	//VERTEX
+//VERTEX
 	R"(
 	void main() {
 		gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
 		vPos = aPos;
 	};
 
-	)"), new csl::ShaderSource("#version 330 core",
-	//FRAGMENT
+	)"), new csl::ShaderSource("#version 330 core", std::list<std::string>{"net.cyanseraph.glsl.fragment.interface"},
+//FRAGMENT
 	R"(
-
 	uniform vec3 tint;
-
-	out vec4 FragColor;
-	in vec3 vPos;
 
 	void main()
 	{
 		FragColor = vec4(tint, 1.0);
 	};
 	)"));
-
 	std::vector<std::string> log;
 	bool success;
 	myCubeShader.Build(success, log);
