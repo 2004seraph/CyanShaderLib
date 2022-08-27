@@ -8,6 +8,8 @@
 #include <iostream>
 #include <vector>
 
+#define SHADERFAIL glDeleteProgram(ShaderID);ShaderID=GL_ZERO;success=false;
+
 namespace cyan {
 	namespace ShaderLib {
 		ShaderProgram::ShaderProgram() {}
@@ -16,6 +18,22 @@ namespace cyan {
 			VertexShaderSource = vertexShaderSrc;
 			FragmentShaderSource = fragmmentShaderSrc;
 		}
+
+		GLuint ShaderProgram::FindUniformLocation(std::string uniform) {
+			std::map<std::string, GLuint>::iterator it = uniformCache.find(uniform);
+
+			GLuint location;
+
+			if (it != uniformCache.end()) {
+				return it->second;
+			}
+			else {
+				location = glGetUniformLocation(ShaderID, uniform.c_str());
+				uniformCache.insert({ uniform, location });
+			}
+
+			return location;
+		};
 
 		unsigned int ShaderProgram::Compile(ShaderSource src, ShaderType type, bool& success, std::string& log) {
 			std::string finalScript = src.LinkIncludes();
@@ -35,7 +53,8 @@ namespace cyan {
 				shaderPointer = glCreateShader(GL_FRAGMENT_SHADER);
 				break;
 			default:
-				shaderPointer = glCreateShader(GL_FRAGMENT_SHADER);
+				std::cout << "Something has went very wrong" << std::endl;
+				return 0;
 				break;
 			}
 
@@ -78,79 +97,78 @@ namespace cyan {
 		unsigned int ShaderProgram::Build(bool& success, std::vector<std::string>& log) {
 			ShaderID = glCreateProgram();
 
-			log.resize(SHADERTYPESCOUNT);
+			GLuint shaderPrograms[SHADERCOUNT];
+			log.resize(FULLTYPESCOUNT);
+			bool GLCompleSuccess;
 
-			GLuint vertexShader = 0;
-			GLuint geometryShader = 0;
-			GLuint fragmentShader = 0;
+			std::string errorLog;
 
 			if (VertexShaderSource != nullptr) {
-				bool vertexSuccess = false;
-				std::string vertexErrors;
-				vertexShader = Compile(*VertexShaderSource, VERTEX, vertexSuccess, vertexErrors);
-				if (!vertexSuccess) {
-					log[VERTEX] = vertexErrors;
-					glDeleteProgram(ShaderID);
-					ShaderID = GL_ZERO;
-					success = false;
+				shaderPrograms[VERTEX] = Compile(*VertexShaderSource, VERTEX, GLCompleSuccess, errorLog);
+				if (!GLCompleSuccess) {
+					log[VERTEX] = errorLog;
+					SHADERFAIL
 					return GL_ZERO;
 				}
 				else {
-					glAttachShader(ShaderID, vertexShader);
+					glAttachShader(ShaderID, shaderPrograms[VERTEX]);
 				}
 			}
 			if (GeometryShaderSource != nullptr) {
-				bool geometrySuccess = false;
-				std::string geometryErrors;
-				geometryShader = Compile(*GeometryShaderSource, GEOMETRY, geometrySuccess, geometryErrors);
-				if (!geometrySuccess) {
-					log[GEOMETRY] = geometryErrors;
-					glDeleteProgram(ShaderID);
-					ShaderID = GL_ZERO;
-					success = false;
+				shaderPrograms[GEOMETRY] = Compile(*GeometryShaderSource, GEOMETRY, GLCompleSuccess, errorLog);
+				if (!GLCompleSuccess) {
+					log[GEOMETRY] = errorLog;
+					SHADERFAIL
 					return GL_ZERO;
 				}
 				else {
-					glAttachShader(ShaderID, geometryShader);
+					glAttachShader(ShaderID, shaderPrograms[GEOMETRY]);
 				}
 			}
 			if (FragmentShaderSource != nullptr) {
-				bool fragmentSuccess = false;
-				std::string fragmentErrors;
-				fragmentShader = Compile(*FragmentShaderSource, FRAGMENT, fragmentSuccess, fragmentErrors);
-				if (!fragmentSuccess) {
-					log[FRAGMENT] = fragmentErrors;
-					glDeleteProgram(ShaderID);
-					ShaderID = GL_ZERO;
-					success = false;
+				shaderPrograms[FRAGMENT] = Compile(*FragmentShaderSource, FRAGMENT, GLCompleSuccess, errorLog);
+				if (!GLCompleSuccess) {
+					log[FRAGMENT] = errorLog;
+					SHADERFAIL
 					return GL_ZERO;
 				}
 				else {
-					glAttachShader(ShaderID, fragmentShader);
+					glAttachShader(ShaderID, shaderPrograms[FRAGMENT]);
 				}
 			}
+
+			GLint length;
+			glGetProgramiv(ShaderID, GL_INFO_LOG_LENGTH, &length);
+			int linkAndValidate;
 
 			//link errors
-
 			glLinkProgram(ShaderID);
-			int linkSuccess;
-			std::string linkLog;
-			glGetProgramiv(ShaderID, GL_LINK_STATUS, &linkSuccess);
-			if (!success) {
-				glGetProgramInfoLog(ShaderID, 512, NULL, &linkLog[0]);
-				log[LINK] = linkLog;
-				success = false;
-				return 0;
+			glGetProgramiv(ShaderID, GL_LINK_STATUS, &linkAndValidate);
+			if (linkAndValidate != GL_TRUE) {
+				glGetProgramInfoLog(ShaderID, length, NULL, &errorLog[0]);
+				log[LINK] = errorLog;
+				SHADERFAIL
+				return GL_ZERO;
+			}
+
+			//validation
+			glValidateProgram(ShaderID);
+			glGetProgramiv(ShaderID, GL_VALIDATE_STATUS, &linkAndValidate);
+			if (linkAndValidate != GL_TRUE) {
+				glGetProgramInfoLog(ShaderID, length, &length, &errorLog[0]);
+				log[VALIDATE] = errorLog;
+				SHADERFAIL
+				return GL_ZERO;
 			}
 
 			if (VertexShaderSource != nullptr) {
-				glDeleteShader(vertexShader);
+				glDeleteShader(shaderPrograms[VERTEX]);
 			}
 			if (GeometryShaderSource != nullptr) {
-				glDeleteShader(geometryShader);
+				glDeleteShader(shaderPrograms[GEOMETRY]);
 			}
 			if (FragmentShaderSource != nullptr) {
-				glDeleteShader(fragmentShader);
+				glDeleteShader(shaderPrograms[FRAGMENT]);
 			}
 
 			success = true;

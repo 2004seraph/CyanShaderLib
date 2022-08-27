@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 
+#include "gl/glew.h"
+
 #include "ShaderSource.hpp"
 
 namespace cyan {
@@ -13,8 +15,10 @@ namespace cyan {
 			VERTEX = 0,
 			GEOMETRY,
 			FRAGMENT,
+			SHADERCOUNT,
 			LINK,
-			SHADERTYPESCOUNT
+			VALIDATE,
+			FULLTYPESCOUNT
 		};
 
 		class ShaderProgram {
@@ -23,11 +27,12 @@ namespace cyan {
 			ShaderSource* GeometryShaderSource = nullptr;
 			ShaderSource* FragmentShaderSource = nullptr;
 
-			unsigned int ShaderID = 0;
+			std::map<std::string, GLuint> uniformCache;
 
 			unsigned int Compile(ShaderSource src, ShaderType type, bool& success, std::string& log);
 
-			//std::map<std::string, int> uniformCache;
+		protected:
+			unsigned int ShaderID = 0;
 
 		public:
 			ShaderProgram();
@@ -56,6 +61,8 @@ namespace cyan {
 
 			void SetActive();
 			void SetActive(bool status);
+
+			GLuint FindUniformLocation(std::string uniform);
 
 			//void SetBool(const std::string& name, bool value) const;
 			//void SetInt(const std::string& name, int value) const;

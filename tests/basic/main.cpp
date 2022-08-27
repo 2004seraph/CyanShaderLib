@@ -2,7 +2,6 @@
 
 #include "ShaderProgram.hpp"
 #include "ShaderLoader.hpp"
-#include "ShaderSource.hpp"
 
 #include "gl/glew.h"
 #include "GLFW/glfw3.h"
@@ -22,6 +21,16 @@ void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+}
+
+struct vector3 {
+	float x, y, z;
+};
+
+void SetUniformV3(cyan::ShaderLib::ShaderProgram prog, std::string name, vector3 v3) {
+	prog.SetActive();
+	GLfloat col[] = { v3.x, v3.y, v3.z };
+	glUniform3fv(prog.FindUniformLocation(name), 1, &col[0]);
 }
 
 namespace csl = cyan::ShaderLib;
@@ -73,8 +82,11 @@ int main(int argc, char* argv[]) {
 	layout (location = 0) in vec3 aPos;
 	out vec3 vPos;
 
+	int fungus = 5;
+
 	#endif
-	)")}
+	)")
+		}
 	};
 	cyan::ShaderLib::LoadShaderLibrary({ myShaderLib });
 
@@ -98,7 +110,7 @@ int main(int argc, char* argv[]) {
 
 	void main()
 	{
-		FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f) + vec4(tint, 1.0f);
+		FragColor = vec4(tint, 1.0);
 	};
 	)"));
 
@@ -109,6 +121,7 @@ int main(int argc, char* argv[]) {
 		std::cout << "VERTEX ERRORS" << std::endl << log[cyan::ShaderLib::VERTEX] << std::endl;
 		std::cout << "FRAGMENT ERRORS" << std::endl << log[cyan::ShaderLib::FRAGMENT] << std::endl;
 		std::cout << "LINKING ERRORS" << std::endl << log[cyan::ShaderLib::LINK] << std::endl;
+		std::cout << "VALIDATION ERRORS" << std::endl << log[cyan::ShaderLib::VALIDATE] << std::endl;
 	}
 	
 	float vertices[] = {
@@ -143,12 +156,14 @@ int main(int argc, char* argv[]) {
 	glBindVertexArray(0);
 
 	myCubeShader.SetActive();
+	vector3 color = vector3{ 0.0f, 1.0f, 0.8f };
+	SetUniformV3(myCubeShader, "tint", color);
 
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.2f, 0.3f, 0.3f, 0.6f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glBindVertexArray(VAO);
