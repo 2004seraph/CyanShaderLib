@@ -2,8 +2,6 @@
 
 #include <string>
 #include <list>
-#include <map>
-#include <initializer_list>
 
 namespace cyan {
 	namespace ShaderLib {
@@ -48,42 +46,5 @@ namespace cyan {
 
 			std::string preprocessorDirectives;
 		};
-
-		class ShaderProgram {
-			ShaderSource* VertexShaderSource = nullptr;
-			//tessallation control+eval shader
-			ShaderSource* GeometryShaderSource = nullptr;
-			ShaderSource* FragmentShaderSource = nullptr;
-
-			unsigned int ShaderID = 0;
-
-			enum ShaderType {
-				VERTEX = 0,
-				GEOMETRY,
-				FRAGMENT
-			};
-
-			unsigned int Compile(ShaderSource src, ShaderType type, bool& success, std::string& log);
-
-		public:
-			ShaderProgram();
-			ShaderProgram(ShaderSource* vertexShaderSrc, ShaderSource* fragmmentShaderSrc);
-
-			void AddVertexShader(ShaderSource* src);
-
-			void AddGeometryShader(ShaderSource* src);
-
-			void AddFragmentShader(ShaderSource* src);
-
-			unsigned int Build(std::list<std::string>& log);
-
-			unsigned int GetShaderProgram();
-
-			void SetActive();
-			void SetActive(bool status);
-		};
-
-		void LoadShaderLibrary(std::map<std::string, ShaderSource> shaderMap);
-		void LoadShaderLibrary(std::initializer_list<std::map<std::string, ShaderSource>> shaderMap);
 	}
 }

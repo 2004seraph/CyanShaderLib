@@ -1,6 +1,7 @@
 #include <iostream>
 
-#include "ShaderObject.hpp"
+#include "ShaderSource.hpp"
+#include "ShaderLoader.hpp"
 
 int main() {
 	

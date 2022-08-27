@@ -22,8 +22,9 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME} STATIC
-    "src/ShaderObject.cpp"
-)
+    "src/ShaderLoader.cpp"
+    "src/ShaderSource.cpp" 
+    "src/ShaderProgram.cpp")
 
  target_link_libraries(
      ${PROJECT_NAME} 
@@ -35,7 +36,10 @@ set_target_properties(
 
     VERSION ${PROJECT_VERSION}
     SOVERSION 1
-    PUBLIC_HEADER include/ShaderObject.hpp
+    PUBLIC_HEADER 
+    include/ShaderLoader.hpp
+    include/ShaderSource.hpp
+    include/ShaderProgram.hpp
 )
 
 target_include_directories(

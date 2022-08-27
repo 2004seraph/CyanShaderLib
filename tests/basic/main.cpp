@@ -1,6 +1,8 @@
 #include <iostream>
 
-#include "ShaderObject.hpp"
+#include "ShaderProgram.hpp"
+#include "ShaderLoader.hpp"
+#include "ShaderSource.hpp"
 
 #include "gl/glew.h"
 #include "GLFW/glfw3.h"
@@ -61,53 +63,53 @@ int main(int argc, char* argv[]) {
 
 	glViewport(0, 0, width, height);
 
-
+	
 	std::map<std::string, cyan::ShaderLib::ShaderSource> myShaderLib = {
-{"net.cyanseraph.glsl.vertex.interface", cyan::ShaderLib::ShaderSource(
-R"(
-#ifndef net_cyanseraph_glsl_vertex_interface
-#define net_cyanseraph_glsl_vertex_interface
+	{"net.cyanseraph.glsl.vertex.interface", cyan::ShaderLib::ShaderSource(
+	R"(
+	#ifndef net_cyanseraph_glsl_vertex_interface
+	#define net_cyanseraph_glsl_vertex_interface
 
-layout (location = 0) in vec3 aPos;
-out vec3 vPos;
+	layout (location = 0) in vec3 aPos;
+	out vec3 vPos;
 
-#endif
-)")}
+	#endif
+	)")}
 	};
 	cyan::ShaderLib::LoadShaderLibrary({ myShaderLib });
 
-
+	
 	csl::ShaderProgram myCubeShader(new csl::ShaderSource("#version 330 core", std::list<std::string>{"net.cyanseraph.glsl.vertex.interface"},
-//VERTEX
-R"(
-//layout (location = 0) in vec3 aPos;
-//out vec3 vPos;
+	//VERTEX
+	R"(
+	void main() {
+		gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+		vPos = aPos;
+	};
 
-void main() {
-	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-	vPos = aPos;
-};
+	)"), new csl::ShaderSource("#version 330 core",
+	//FRAGMENT
+	R"(
 
-)"), new csl::ShaderSource("#version 330 core",
-//FRAGMENT
-R"(
+	uniform vec3 tint;
 
-out vec4 FragColor;
-in vec3 vPos;
+	out vec4 FragColor;
+	in vec3 vPos;
 
-void main()
-{
-	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f) + vec4(vPos, 1.0f);
-};
-)"));
+	void main()
+	{
+		FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f) + vec4(tint, 1.0f);
+	};
+	)"));
 
-	std::list<std::string> log;
-	GLuint shaderProgram = myCubeShader.Build(log);
-
-	for (auto elem : log) {
-		std::cout << elem << std::endl;
+	std::vector<std::string> log;
+	bool success;
+	myCubeShader.Build(success, log);
+	if (!success) {
+		std::cout << "VERTEX ERRORS" << std::endl << log[cyan::ShaderLib::VERTEX] << std::endl;
+		std::cout << "FRAGMENT ERRORS" << std::endl << log[cyan::ShaderLib::FRAGMENT] << std::endl;
+		std::cout << "LINKING ERRORS" << std::endl << log[cyan::ShaderLib::LINK] << std::endl;
 	}
-	//std::cout << log.size() << std::endl;
 	
 	float vertices[] = {
 		 0.5f,  0.5f, 0.0f,  // top right
