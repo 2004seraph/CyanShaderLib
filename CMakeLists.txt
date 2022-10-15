@@ -43,7 +43,7 @@ set_target_properties(
 )
 
 target_include_directories(
-    ${PROJECT_NAME} PRIVATE include/
+    ${PROJECT_NAME} PUBLIC include/
 )
 
 install(
