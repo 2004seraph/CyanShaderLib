@@ -1,4 +1,4 @@
-#include "ShaderLoader.hpp"
+#include "CyanShaderLib/ShaderLoader.hpp"
 
 namespace cyan {
 	namespace ShaderLib {

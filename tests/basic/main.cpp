@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "ShaderProgram.hpp"
-#include "ShaderLoader.hpp"
+#include "CyanShaderLib/ShaderProgram.hpp"
+#include "CyanShaderLib/ShaderLoader.hpp"
 
 #include "gl/glew.h"
 #include "GLFW/glfw3.h"

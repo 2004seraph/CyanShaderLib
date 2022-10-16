@@ -1,5 +1,5 @@
-#include "ShaderSource.hpp"
-#include "ShaderLoader.hpp"
+#include "CyanShaderLib/ShaderSource.hpp"
+#include "CyanShaderLib/ShaderLoader.hpp"
 
 #include <iostream>
 

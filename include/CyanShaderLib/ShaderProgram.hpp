@@ -5,9 +5,9 @@
 #include <vector>
 #include <map>
 
-#include "gl/glew.h"
-
 #include "ShaderSource.hpp"
+
+#include "gl/glew.h"
 
 namespace cyan {
 	namespace ShaderLib {
@@ -62,7 +62,7 @@ namespace cyan {
 			void SetActive();
 			void SetActive(bool status);
 
-			GLuint FindUniformLocation(std::string uniform);
+			unsigned int FindUniformLocation(std::string uniform);
 
 			//void SetBool(const std::string& name, bool value) const;
 			//void SetInt(const std::string& name, int value) const;

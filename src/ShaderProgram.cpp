@@ -1,7 +1,6 @@
-#include "ShaderProgram.hpp"
-
-#include "ShaderSource.hpp"
-#include "ShaderLoader.hpp"
+#include "CyanShaderLib/ShaderProgram.hpp"
+#include "CyanShaderLib/ShaderSource.hpp"
+#include "CyanShaderLib/ShaderLoader.hpp"
 
 #include "gl/glew.h"
 
