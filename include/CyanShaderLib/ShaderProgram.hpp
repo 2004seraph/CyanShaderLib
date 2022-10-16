@@ -7,7 +7,7 @@
 
 #include "ShaderSource.hpp"
 
-#include "gl/glew.h"
+//#include "gl/glew.h"
 
 namespace cyan {
 	namespace ShaderLib {
@@ -27,7 +27,7 @@ namespace cyan {
 			ShaderSource* GeometryShaderSource = nullptr;
 			ShaderSource* FragmentShaderSource = nullptr;
 
-			std::map<std::string, GLuint> uniformCache;
+			std::map<std::string, unsigned int> uniformCache;
 
 			unsigned int Compile(ShaderSource src, ShaderType type, bool& success, std::string& log);
 

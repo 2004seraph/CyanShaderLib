@@ -18,13 +18,13 @@ namespace cyan {
 			FragmentShaderSource = fragmmentShaderSrc;
 		}
 
-		GLuint ShaderProgram::FindUniformLocation(std::string uniform) {
-			std::map<std::string, GLuint>::iterator it = uniformCache.find(uniform);
+		unsigned int ShaderProgram::FindUniformLocation(std::string uniform) {
+			std::map<std::string, unsigned int>::iterator it = uniformCache.find(uniform);
 
 			GLuint location;
 
 			if (it != uniformCache.end()) {
-				return it->second;
+				return (it->second);
 			}
 			else {
 				location = glGetUniformLocation(ShaderID, uniform.c_str());
