@@ -1,25 +1,24 @@
 ﻿{
     "version": 3,
     "configurePresets": [
-      {
-        "name": "windows-base",
-        "hidden": true,
-        "generator": "Ninja",
-        "binaryDir": "${sourceDir}/build/lib/${presetName}",
-        "installDir": "${sourceDir}/install/${presetName}",
-        "cacheVariables": {
-          "CMAKE_C_COMPILER": "cl.exe",
-          "CMAKE_CXX_COMPILER": "cl.exe",
-          "VCPKG_OVERLAY_TRIPLETS": "triplets",
-          "VCPKG_TARGET_TRIPLET": "x64-windows-cyanseraph-app"
+        {
+            "name": "windows-base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/lib/${presetName}",
+            "installDir": "${sourceDir}/install/${presetName}",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "cl.exe",
+                "CMAKE_CXX_COMPILER": "cl.exe",
+                "VCPKG_TARGET_TRIPLET": "x64-windows-cyanseraph-app"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "toolchainFile": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
         },
-        "condition": {
-          "type": "equals",
-          "lhs": "${hostSystemName}",
-          "rhs": "Windows"
-        },
-        "toolchainFile": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
-      },
         {
             "name": "x64-debug",
             "displayName": "x64 Debug",
