@@ -17,7 +17,7 @@
                 "lhs": "${hostSystemName}",
                 "rhs": "Windows"
             },
-            "toolchainFile": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+            "toolchainFile": "scripts/toolchains/PrimaryToolChain.cmake"
         },
         {
             "name": "x64-debug",

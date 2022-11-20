@@ -13,7 +13,9 @@ project(
     DESCRIPTION "A simple C++17 GLSL shader library"
 )
 
-find_package(glew)
+find_package(
+    GLEW REQUIRED
+)
 
 include_directories(
   ${PROJECT_NAME}
