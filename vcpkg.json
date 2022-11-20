@@ -3,6 +3,7 @@
   "name": "cyanshaderlib",
   "license": "MPL-2.0",
   "version": "1.0.0",
+  "port-version": 0,
   "dependencies": [
     "glew"
   ],
