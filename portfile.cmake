@@ -1,7 +1,7 @@
 vcpkg_from_github(
   OUT_SOURCE_PATH SOURCE_PATH
   REPO cyanseraph/cyanshaderlib
-  REF ebced73f6ec36c9e3c5863f7760d24eb5183141a
+  REF 3af272bc74b5becf2e35a780b638ac35322075fa
   SHA512 0
   HEAD_REF main
 )
