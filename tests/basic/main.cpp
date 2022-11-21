@@ -159,8 +159,10 @@ int main(int argc, char* argv[]) {
 	glBindVertexArray(0);
 
 	myCubeShader.SetActive();
-	vector3 color = vector3{ 0.0f, 1.0f, 0.8f };
-	SetUniformV3(myCubeShader, "tint", color);
+	vector3 color2 = vector3{ 0.0f, 1.0f, 0.8f };
+	SetUniformV3(myCubeShader, "tint", color2);
+
+	float i = 0;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -175,6 +177,11 @@ int main(int argc, char* argv[]) {
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+
+		vector3 color = vector3{ 0.0f, (float)pow(sin(i/4), 2), 0.8f};
+		SetUniformV3(myCubeShader, "tint", color);
+
+		i = i + 1;
 	}
 
 	glfwDestroyWindow(window);

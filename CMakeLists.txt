@@ -19,14 +19,13 @@ find_package(
 
 include_directories(
   ${PROJECT_NAME}
-  ${GLEW_INCLUDE_DIRS}
   "include/"
 )
 
 add_library(${PROJECT_NAME} STATIC
-    "src/ShaderLoader.cpp"
-    "src/ShaderSource.cpp" 
-    "src/ShaderProgram.cpp")
+    src/ShaderLoader.cpp
+    src/ShaderSource.cpp 
+    src/ShaderProgram.cpp)
 
  target_link_libraries(
      ${PROJECT_NAME} 
@@ -36,17 +35,16 @@ add_library(${PROJECT_NAME} STATIC
 
 set_target_properties(
     ${PROJECT_NAME} PROPERTIES 
+    FRAMEWORK TRUE
+    FRAMEWORK_VERSION A
 
     VERSION ${PROJECT_VERSION}
-    SOVERSION 1
-    PUBLIC_HEADER 
-    include/ShaderLoader.hpp
-    include/ShaderSource.hpp
-    include/ShaderProgram.hpp
+    SOVERSION 1.0.0
+    PUBLIC_HEADER CyanShaderLib/ShaderLoader.hpp CyanShaderLib/ShaderSource.hpp CyanShaderLib/ShaderProgram.hpp
 )
 
 target_include_directories(
-    ${PROJECT_NAME} PUBLIC include/
+    ${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/include/
 )
 
 install(
