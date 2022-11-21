@@ -33,6 +33,12 @@ add_library(${PROJECT_NAME} STATIC
      GLEW::GLEW
  )
 
+ #MSVC debugging tools like edit and continue
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PUBLIC "/ZI")
+    target_link_options(${PROJECT_NAME} PUBLIC "/INCREMENTAL")
+endif()
+
 set_target_properties(
     ${PROJECT_NAME} PROPERTIES 
     FRAMEWORK TRUE
