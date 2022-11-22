@@ -3,8 +3,17 @@
 #
 cmake_minimum_required(VERSION 3.8)
 
+include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
+
 set(
     CMAKE_CXX_STANDARD 17
+)
+set (HEADER
+    ${HEADER}
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/CyanShaderLib/ShaderLoader.hpp 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/CyanShaderLib/ShaderSource.hpp 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/CyanShaderLib/ShaderProgram.hpp
 )
 
 project(
@@ -44,18 +53,27 @@ set_target_properties(
 
     VERSION ${PROJECT_VERSION}
     SOVERSION 1.0.0
-    PUBLIC_HEADER CyanShaderLib/ShaderLoader.hpp CyanShaderLib/ShaderSource.hpp CyanShaderLib/ShaderProgram.hpp
+    PUBLIC_HEADER ${HEADER}
 )
 
 target_include_directories(
-    ${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/include/
+    ${PROJECT_NAME} PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}>  
+    $<INSTALL_INTERFACE:include/${PROJECT_NAME}>  # <prefix>/include/mylib
 )
 
-#install(
-#    TARGETS ${PROJECT_NAME}
-#    PUBLIC_HEADER CyanShaderLib/ShaderLoader.hpp CyanShaderLib/ShaderSource.hpp CyanShaderLib/ShaderProgram.hpp
-#    DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#)
+install(
+    TARGETS ${PROJECT_NAME} 
+    EXPORT ${PROJECT_NAME}-targets
+)
+
+install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+install(
+    EXPORT ${PROJECT_NAME}-targets
+	NAMESPACE ${PROJECT_NAME}::
+	DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME})
 
 # TESTS
 
