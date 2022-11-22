@@ -39,25 +39,23 @@ if(MSVC)
     target_link_options(${PROJECT_NAME} PUBLIC "/INCREMENTAL")
 endif()
 
-#set_target_properties(
-#    ${PROJECT_NAME} PROPERTIES 
-#    FRAMEWORK TRUE
-#    FRAMEWORK_VERSION A
-#
-#    VERSION ${PROJECT_VERSION}
-#    SOVERSION 1.0.0
-#    PUBLIC_HEADER CyanShaderLib/ShaderLoader.hpp CyanShaderLib/ShaderSource.hpp CyanShaderLib/ShaderProgram.hpp
-#)
+set_target_properties(
+    ${PROJECT_NAME} PROPERTIES 
+
+    VERSION ${PROJECT_VERSION}
+    SOVERSION 1.0.0
+    PUBLIC_HEADER CyanShaderLib/ShaderLoader.hpp CyanShaderLib/ShaderSource.hpp CyanShaderLib/ShaderProgram.hpp
+)
 
 target_include_directories(
     ${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/include/
 )
 
-install(
-    TARGETS ${PROJECT_NAME}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
+#install(
+#    TARGETS ${PROJECT_NAME}
+#    PUBLIC_HEADER CyanShaderLib/ShaderLoader.hpp CyanShaderLib/ShaderSource.hpp CyanShaderLib/ShaderProgram.hpp
+#    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#)
 
 # TESTS
 
