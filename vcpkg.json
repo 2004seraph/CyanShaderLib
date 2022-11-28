@@ -26,14 +26,30 @@
     }
   ],
   "builtin-baseline": "e8bbe813151e45077fa70887b1f87ccce514701a",
-  "$default-features-explanation": "glfw3 is required for this library's tests, you won't need it otherwise",
-  "default-features": [ "glfw3" ],
+  "$default-features-explanation": "glfw3, stb and glm are required for this library's tests, you won't need them otherwise",
+  "default-features": [ "glfw3", "glm", "stb" ],
   "features": {
     "glfw3": {
       "description": "The glfw3 windowing API",
       "dependencies": [
         {
           "name": "glfw3"
+        }
+      ]
+    },
+    "glm": {
+      "description": "The glm library",
+      "dependencies": [
+        {
+          "name": "glm"
+        }
+      ]
+    },
+    "stb": {
+      "description": "The stb library",
+      "dependencies": [
+        {
+          "name": "stb"
         }
       ]
     }

@@ -1,0 +1,45 @@
+SET(
+    APP_EXE gaussian
+)
+
+ADD_EXECUTABLE(
+    ${APP_EXE}
+    main.cpp
+)
+
+#VCPKG LIBS
+find_package(glfw3 CONFIG REQUIRED)
+find_package(glew CONFIG REQUIRED)
+find_package(glm REQUIRED)
+
+find_path(STB_INCLUDE_DIRS "stb_c_lexer.h")
+
+include_directories(
+  ${PROJECT_NAME}
+  "../../include/"
+  ${GLEW_INCLUDE_DIRS}
+  ${GLFW_INCLUDE_DIRS}
+  ${STB_INCLUDE_DIRS}
+)
+
+target_include_directories(
+    ${APP_EXE} 
+    PRIVATE 
+    ${SOURCE_SUBDIR}/include
+)
+
+TARGET_LINK_LIBRARIES(
+    ${APP_EXE} 
+    opengl32 
+    winmm
+    gdi32
+    CyanShaderLib
+#    GLEW::GLEW
+    glfw
+    glm::glm
+)
+
+add_test(
+    NAME ${APP_EXE}
+    COMMAND ${APP_EXE}
+)
