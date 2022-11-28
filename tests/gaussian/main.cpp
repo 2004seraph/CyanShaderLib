@@ -59,35 +59,44 @@ T Gauss(const T x, const T m, const T s)
 }
 
 template<unsigned int SIZE, typename T>
-T* GaussMatrix(T range, T mu, T standard_deviation) {
-	T matrix[SIZE * SIZE + 1];
-
+void GaussMatrix(T* buffer, T range, T mu, T standard_deviation) {
 	T step = (range * 2) / (T)(SIZE);
 
 	for (int y = 0; y < SIZE; y++) {
-		double y_value = Gauss<T>(std::lerp(-range, range, ((double)y) / ((double)SIZE)), mu, standard_deviation);
+		T y_value = Gauss<T>(std::lerp(-range, range, ((double)y) / ((double)SIZE)), mu, standard_deviation);
 		for (int x = 0; x < SIZE; x++) {
-			matrix[y * SIZE + x] = Gauss<T>(std::lerp(-range, range, ((double)x) / ((double)SIZE)), mu, standard_deviation) * y_value;
+			T val = Gauss<T>(std::lerp(-range, range, ((double)x) / ((double)SIZE)), mu, standard_deviation) * y_value;
+			buffer[y * SIZE + x] = val;
 
-			std::stringstream stream;
-			stream << std::fixed << std::setprecision(4) << (Gauss<T>(std::lerp(-range, range, ((double)x) / ((double)SIZE)), mu, standard_deviation) * y_value);
-			std::cout << stream.str() << '	';
+			//std::stringstream stream;
+			//stream << std::fixed << std::setprecision(4) << val;
+			//std::cout << stream.str() << '	';
 		}
-		std::cout << std::endl << std::endl;
+		//std::cout << std::endl << std::endl;
 	}
-
-	return matrix;
 }
 
-const unsigned int GUASS_MATRIX_SIZE = 7;
+const unsigned int GUASS_MATRIX_SIZE = 4;
 const double GUASS_MATRIX_RANGE = 2;
 const double GUASS_MU = 0;
-const double GAUSS_STANDARD_DEVIATION = 0.5;
+const double GAUSS_STANDARD_DEVIATION = 0.8;
 
 int main(int argc, char* argv[]) {
 	std::cout << "hello world" << std::endl;
 
-	float * g_matrix = GaussMatrix<GUASS_MATRIX_SIZE, float>(GUASS_MATRIX_RANGE, GUASS_MU, GAUSS_STANDARD_DEVIATION);
+	float gauss_matrix[GUASS_MATRIX_SIZE * GUASS_MATRIX_SIZE];
+	GaussMatrix<GUASS_MATRIX_SIZE, float>(gauss_matrix, GUASS_MATRIX_RANGE, GUASS_MU, GAUSS_STANDARD_DEVIATION);
+	std::cout << std::endl << std::endl;
+	for (int i = 0; i < GUASS_MATRIX_SIZE * GUASS_MATRIX_SIZE; i++) {
+		std::stringstream stream;
+		stream << std::fixed << std::setprecision(4) << gauss_matrix[i];
+		std::cout << stream.str() << '	';
+		if ((i + 1) % (GUASS_MATRIX_SIZE) == 0) {
+			std::cout << std::endl << std::endl;
+		}
+	}
+
+	std::cout << std::endl;
 
 #pragma region WINDOW_SETUP
 
@@ -168,7 +177,6 @@ int main(int argc, char* argv[]) {
 	#define net_cyanseraph_glsl_fragment_tex_interface
 
 	in vec2 vTex;
-	uniform sampler2D vTexture;
 
 	#endif
 	)")
@@ -184,7 +192,7 @@ int main(int argc, char* argv[]) {
 
 	{
 		int image_width, image_height, nrChannels;
-		unsigned char* data = stbi_load("C:\\Users\\Sam Taseff\\Documents\\cpp\\CyanShaderLib\\tests\\gaussian\\jet.jpg", &image_width, &image_height, &nrChannels, 0);
+		unsigned char* data = stbi_load("C:\\Users\\User\\source\\repos\\testGTK\\CyanShaderLib\\tests\\gaussian\\jet.jpg", &image_width, &image_height, &nrChannels, 0);//, C:\\Users\\Sam Taseff\\Documents\\cpp\\CyanShaderLib\\tests\\gaussian
 		if (data)
 		{
 			//opengl
@@ -215,21 +223,29 @@ int main(int argc, char* argv[]) {
 	)"), new csl::ShaderSource("#version 330 core", std::list<std::string>{"net.cyanseraph.glsl.fragment.pos_interface", "net.cyanseraph.glsl.fragment.tex_interface"},
 	//FRAGMENT
 	R"(
+	#extension GL_EXT_gpu_shader4 : enable
+
 	uniform vec3 tint;
 
+	uniform sampler2D vTexture;
+	uniform int gaussMatrixSize;
 	uniform float gaussMatrix[)" + std::to_string(GUASS_MATRIX_SIZE * GUASS_MATRIX_SIZE) + R"(];
 
 	void main()
 	{
 		vec3 finalColor = vec3(0.0, 0.0, 0.0);
-		for(int i = 0; i < int()" + std::to_string(GUASS_MATRIX_SIZE * GUASS_MATRIX_SIZE) + R"(); ++i)
+		for(int i = 0; i < gaussMatrixSize * gaussMatrixSize; ++i)
 		{
-			int x = int(float(i) / float()" + std::to_string(GUASS_MATRIX_SIZE) + R"());
-			int y = int(mod(i, float()" + std::to_string(GUASS_MATRIX_SIZE) + R"()));
+			vec2 point = vec2( mod(i, float(gaussMatrixSize)) - 1, floor(float(i) / float(gaussMatrixSize)) ) / textureSize(vTexture, 0);
 
-			finalColor.x = finalColor.x + texture(vTexture, vTex + vec2(x - int(7 / 2), y - int(7 / 2))).x * gaussMatrix[i];
-			finalColor.y = finalColor.y + texture(vTexture, vTex + vec2(x - int(7 / 2), y - int(7 / 2))).y * gaussMatrix[i];
-			finalColor.z = finalColor.z + texture(vTexture, vTex + vec2(x - int(7 / 2), y - int(7 / 2))).z * gaussMatrix[i];
+			vec3 int_c = texture(
+				vTexture, 
+				vTex + (point - vec2(gaussMatrixSize / 2f, gaussMatrixSize / 2f)) 
+			).xyz;
+
+			finalColor = finalColor + int_c * gaussMatrix[i];
+
+
 		}
 		FragColor = vec4(finalColor, 1.0);	//vec4(tint, 1.0);
 	};
@@ -291,7 +307,8 @@ int main(int argc, char* argv[]) {
 	myShader.SetActive();
 	//vector3 color2 = vector3{ 0.0f, 1.0f, 0.8f };
 	//SetUniformV3(myShader, "tint", color2);
-	glUniform1fv(myShader.FindUniformLocation("gaussMatrix"), GUASS_MATRIX_SIZE * GUASS_MATRIX_SIZE, g_matrix);
+	glUniform1fv(myShader.FindUniformLocation("gaussMatrix"), GUASS_MATRIX_SIZE * GUASS_MATRIX_SIZE, gauss_matrix);
+	glUniform1i(myShader.FindUniformLocation("gaussMatrixSize"), GUASS_MATRIX_SIZE);
 
 	float frameCount = 0;
 
