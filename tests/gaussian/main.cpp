@@ -76,10 +76,10 @@ void GaussMatrix(T* buffer, T range, T mu, T standard_deviation) {
 	}
 }
 
-const unsigned int GUASS_MATRIX_SIZE = 4;
-const double GUASS_MATRIX_RANGE = 2;
+const unsigned int GUASS_MATRIX_SIZE = 8;
+const double GUASS_MATRIX_RANGE = 3;
 const double GUASS_MU = 0;
-const double GAUSS_STANDARD_DEVIATION = 0.8;
+const double GAUSS_STANDARD_DEVIATION = 5;
 
 int main(int argc, char* argv[]) {
 	std::cout << "hello world" << std::endl;
@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
 	for (int i = 0; i < GUASS_MATRIX_SIZE * GUASS_MATRIX_SIZE; i++) {
 		std::stringstream stream;
 		stream << std::fixed << std::setprecision(4) << gauss_matrix[i];
-		std::cout << stream.str() << '	';
+		std::cout << '(' << (i % (int)GUASS_MATRIX_SIZE) << ", " << (int)(i / GUASS_MATRIX_SIZE) << ')' << stream.str() << '	';
 		if ((i + 1) % (GUASS_MATRIX_SIZE) == 0) {
 			std::cout << std::endl << std::endl;
 		}
@@ -192,7 +192,8 @@ int main(int argc, char* argv[]) {
 
 	{
 		int image_width, image_height, nrChannels;
-		unsigned char* data = stbi_load("C:\\Users\\User\\source\\repos\\testGTK\\CyanShaderLib\\tests\\gaussian\\jet.jpg", &image_width, &image_height, &nrChannels, 0);//, C:\\Users\\Sam Taseff\\Documents\\cpp\\CyanShaderLib\\tests\\gaussian
+		//unsigned char* data = stbi_load("C:\\Users\\User\\source\\repos\\testGTK\\CyanShaderLib\\tests\\gaussian\\jet.jpg", &image_width, &image_height, &nrChannels, 0);
+		unsigned char* data = stbi_load("C:\\Users\\Sam Taseff\\Documents\\cpp\\CyanShaderLib\\tests\\gaussian\\jet.jpg", &image_width, &image_height, &nrChannels, 0);
 		if (data)
 		{
 			//opengl
@@ -214,41 +215,50 @@ int main(int argc, char* argv[]) {
 	csl::ShaderProgram myShader(new csl::ShaderSource("#version 330 core", std::list<std::string>{"net.cyanseraph.glsl.vertex.pos_interface", "net.cyanseraph.glsl.vertex.tex_interface"},
 	//VERTEX
 	R"(
-	void main() {
-		gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-		vPos = aPos;
-		vTex = aTex;
-	};
-
+void main() {
+	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+	vPos = aPos;
+	vTex = aTex;
+};
 	)"), new csl::ShaderSource("#version 330 core", std::list<std::string>{"net.cyanseraph.glsl.fragment.pos_interface", "net.cyanseraph.glsl.fragment.tex_interface"},
 	//FRAGMENT
 	R"(
-	#extension GL_EXT_gpu_shader4 : enable
+#extension GL_EXT_gpu_shader4 : enable
 
-	uniform vec3 tint;
+uniform vec3 tint;
 
-	uniform sampler2D vTexture;
-	uniform int gaussMatrixSize;
-	uniform float gaussMatrix[)" + std::to_string(GUASS_MATRIX_SIZE * GUASS_MATRIX_SIZE) + R"(];
+uniform sampler2D vTexture;
+uniform int gaussMatrixSize;
+uniform float gaussMatrix[)" + std::to_string(GUASS_MATRIX_SIZE * GUASS_MATRIX_SIZE) + R"(];
 
-	void main()
+void main()
+{
+	vec3 finalColor = vec3(0.0, 0.0, 0.0);
+
+ivec2 size = textureSize(vTexture, 0); // "level" is the mipmap level in question
+ivec2 origin = ivec2(floor(vTex * size));
+
+	for(int i = 0; i < gaussMatrixSize * gaussMatrixSize; ++i)
 	{
-		vec3 finalColor = vec3(0.0, 0.0, 0.0);
-		for(int i = 0; i < gaussMatrixSize * gaussMatrixSize; ++i)
-		{
-			vec2 point = vec2( mod(i, float(gaussMatrixSize)) - 1, floor(float(i) / float(gaussMatrixSize)) ) / textureSize(vTexture, 0);
+		ivec2 point = origin 
+			+ ivec2( mod(i, float(gaussMatrixSize)) - float(gaussMatrixSize) / 2, floor(float(i) / float(gaussMatrixSize)) - float(gaussMatrixSize) / 2 );
 
-			vec3 int_c = texture(
-				vTexture, 
-				vTex + (point - vec2(gaussMatrixSize / 2f, gaussMatrixSize / 2f)) 
-			).xyz;
+		//vec3 int_c = texture(
+		//	vTexture, 
+		//	vTex + (point)// * float(gaussMatrixSize)
+		//).xyz;
 
-			finalColor = finalColor + int_c * gaussMatrix[i];
+		vec3 int_c = texelFetch(
+			vTexture, 
+			point,
+			0
+		).rgb;
 
+		finalColor = finalColor + int_c * gaussMatrix[i];
 
-		}
-		FragColor = vec4(finalColor, 1.0);	//vec4(tint, 1.0);
-	};
+	}
+	FragColor = vec4(finalColor, 1.0);	//vec4(tint, 1.0);
+};
 	)"));
 
 #pragma region BUILD_SHADER
@@ -267,10 +277,10 @@ int main(int argc, char* argv[]) {
 	
 	float vertices[] = {
 		/* positions		    tex coords */
-		 0.5f,  0.5f, 0.0f,		1.0f, 1.0f, /* top right	 */
-		 0.5f, -0.5f, 0.0f,		1.0f, 0.0f, /* bottom right  */
-		-0.5f, -0.5f, 0.0f,		0.0f, 0.0f, /* bottom left	 */
-		-0.5f,  0.5f, 0.0f,		0.0f, 1.0f, /* top left		 */
+		 0.5f,  0.5f, 0.0f,		1.0f, 0.0f, /* top right	 */
+		 0.5f, -0.5f, 0.0f,		1.0f, 1.0f, /* bottom right  */
+		-0.5f, -0.5f, 0.0f,		0.0f, 1.0f, /* bottom left	 */
+		-0.5f,  0.5f, 0.0f,		0.0f, 0.0f, /* top left		 */
 	};
 	unsigned int indices[] = {  // note that we start from 0!
 		0, 1, 3,				// first Triangle
