@@ -16,6 +16,10 @@ set (HEADER
     ${CMAKE_CURRENT_SOURCE_DIR}/include/CyanShaderLib/ShaderProgram.hpp
 )
 
+if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
+    set(CMAKE_INSTALL_LIBDIR "library")
+endif()
+
 project(
     "CyanShaderLib" 
     VERSION 1.0.0 
